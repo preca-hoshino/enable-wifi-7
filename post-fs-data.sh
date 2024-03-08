@@ -13,4 +13,5 @@ if [ -e "${MODDIR}/xml/${WIFICFG}" ]; then
 fi
 
 resetprop -n ro.boot.wificountrycode US
+resetprop -n ro.boot.hwc US
 iw reg set US
