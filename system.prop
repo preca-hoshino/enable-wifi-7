@@ -1,2 +1,11 @@
 # Enable Wi-Fi 7 (for some devices)
 ro.oplus.wifi.11be_disabled=0
+
+# Xiaomi
+ro.miui.wifi.region=US
+ro.product.locale.region=US
+
+#Lenovo
+ro.boot.countrycode=us
+ro.product.countrycode=us
+ro.boot.wificountrycode=US

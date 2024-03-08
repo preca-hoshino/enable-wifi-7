@@ -11,3 +11,6 @@ WIFICFG="WCNSS_qcom_cfg.ini"
 if [ -e "${MODDIR}/xml/${WIFICFG}" ]; then
     mount -o ro,bind ${MODDIR}/xml/${WIFICFG} /odm/vendor/etc/wifi/${WIFICFG}
 fi
+
+resetprop -n ro.boot.wificountrycode US
+iw reg set US
