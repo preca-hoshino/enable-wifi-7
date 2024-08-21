@@ -9,4 +9,6 @@ fi
 
 if [ -e /mnt/vendor/persist/wlan/${WIFICFG} ]; then
     sed -i 's@BandCapability=@#BandCapabilityMOD=@g' /mnt/vendor/persist/wlan/${WIFICFG}
+    # Samsung
+    sed -i 's@enable_11be=0@enable_11be=1@g' /mnt/vendor/persist/wlan/${WIFICFG}
 fi
