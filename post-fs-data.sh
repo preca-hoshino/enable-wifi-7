@@ -12,6 +12,8 @@ if [ -e "${MODDIR}/xml/${WIFICFG}" ]; then
     mount -o ro,bind ${MODDIR}/xml/${WIFICFG} /odm/vendor/etc/wifi/${WIFICFG}
 fi
 
+# Comment out if you don't want to change country code
+cmd wifi force-country-code enabled US
 resetprop -n ro.boot.wificountrycode US
 resetprop -n ro.boot.hwc US
 iw reg set US
