@@ -8,4 +8,4 @@ ro.product.locale.region=US
 #Lenovo
 ro.boot.countrycode=us
 ro.product.countrycode=us
-ro.boot.wificountrycode=US
+ro.boot.wificountrycode=AU
