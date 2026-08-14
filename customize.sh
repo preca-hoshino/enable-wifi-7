@@ -125,6 +125,44 @@ install_qcom_ini() {
     return 0
 }
 
+# ---------- 固件 ini：/odm/firmware 路径（驱动固件实际加载的配置）----------
+# 高通 qca_cld 驱动通过 ueventd firmware 机制加载 /odm/firmware/wlan/qca_cld/<chip>/WCNSS_qcom_cfg.ini
+# 该文件控制固件频段能力（BandCapability）与 6GHz 总开关（oem_6g_support_disable）
+# 实测 (Pad 6S Pro / kiwi_v2): 出厂值 BandCapability=3(2.4G+5G) + oem_6g_support_disable=1
+#   → 6GHz 信道列表全空 (cmd wifi get-allowed-channel -b 8 无输出)
+#   → 只解锁 /vendor/etc/wifi 的 ini 无效，必须同步解锁固件 ini 才能开放 6GHz
+install_firmware_ini() {
+    local src=""
+    # 1. 芯片型号精确目录优先
+    if [ -n "$CHIP" ]; then
+        for candidate in /odm/firmware/wlan/qca_cld/${CHIP}/${WIFICFG}; do
+            if [ -e "$candidate" ]; then
+                src="$candidate"
+                break
+            fi
+        done
+    fi
+    # 2. 通配符兜底
+    if [ -z "$src" ]; then
+        src=$(ls /odm/firmware/wlan/qca_cld/*/${WIFICFG} 2>/dev/null | head -1)
+    fi
+    [ -z "$src" ] && return 1
+
+    # 目标：模块 system/odm/ 目录（KSU/Magisk overlay 挂载到 /odm）
+    local rel="${src#/}"   # odm/firmware/wlan/qca_cld/kiwi_v2/WCNSS_qcom_cfg.ini
+    local dest="${MODPATH}/system/${rel}"
+    mkdir -p "$(dirname "$dest")"
+    cp -a "$src" "$dest"
+    unlock_ini "$dest"
+    # 保留模块内副本 + 源路径记录（post-fs-data.sh bind mount fallback 用）
+    mkdir -p "${MODPATH}/xml"
+    cp -a "$src" "${MODPATH}/xml/${WIFICFG}.odm"
+    unlock_ini "${MODPATH}/xml/${WIFICFG}.odm"
+    echo "$src" > "${MODPATH}/xml/wificfg_source_odm"
+    info "firmware ini: $src"
+    return 0
+}
+
 # ---------- 三星方案：persist 分区（overlay 管不到，安装时直接改真实文件）----------
 install_samsung_persist() {
     if [ -e "/mnt/vendor/persist/wlan/${WIFICFG}" ]; then
@@ -138,6 +176,7 @@ install_samsung_persist() {
 # ---------- 主流程 ----------
 if is_qcom_soc || [ -n "$(ls /vendor/etc/wifi/*/${WIFICFG} /odm/vendor/etc/wifi/*/${WIFICFG} 2>/dev/null | head -1)" ]; then
     install_qcom_ini
+    install_firmware_ini
 else
     info "non-Qualcomm SoC, country-code only"
 fi

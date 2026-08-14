@@ -70,7 +70,8 @@ CHIP=$(dumpsys wifi 2>/dev/null | grep -o 'HW:[A-Za-z0-9_]*' | head -1 | cut -d:
 for ini in /vendor/etc/wifi/${CHIP}/WCNSS_qcom_cfg.ini \
            /odm/vendor/etc/wifi/${CHIP}/WCNSS_qcom_cfg.ini \
            /vendor/etc/wifi/WCNSS_qcom_cfg.ini \
-           /odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini; do
+           /odm/vendor/etc/wifi/WCNSS_qcom_cfg.ini \
+           /odm/firmware/wlan/qca_cld/${CHIP}/WCNSS_qcom_cfg.ini; do
     if [ -f "$ini" ] && grep -q 'enable-wifi-7 module' "$ini" 2>/dev/null; then
         INI_ST="unlocked"
         break

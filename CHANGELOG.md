@@ -1,5 +1,15 @@
 # Changelog
 
+## v15 (2026-08-15)
+
+- **关键修复: 解锁驱动固件 ini (`/odm/firmware`)，6GHz 真正开放**（Pad 6S Pro / kiwi_v2 实测根因）
+  - 高通 qca_cld 驱动通过 ueventd firmware 机制加载 `/odm/firmware/wlan/qca_cld/<chip>/WCNSS_qcom_cfg.ini`，该文件才是固件频段能力的最终控制者；此前的模块只解锁 `/vendor/etc/wifi` 下的 ini（HAL 配置），固件路径从未被覆盖
+  - 实测该固件 ini 出厂值 `BandCapability=3`（=2.4G+5G，不含 6GHz bit）+ `oem_6g_support_disable=1` → `cmd wifi get-allowed-channel -b 8` 返回空，6GHz 全频段被固件屏蔽
+  - **修复**: `customize.sh` 新增 `install_firmware_ini()`，安装时同步解锁 `/odm/firmware/wlan/qca_cld/*/WCNSS_qcom_cfg.ini`（注释 `BandCapability` + 强制 `oem_6g_support_disable=0` + 关 802.11d 扫描），部署到模块 `system/odm/firmware/...` 供 KSU/Magisk overlay 挂载
+  - `post-fs-data.sh` 新增固件 ini 的 bind mount 兜底（`xml/wificfg_source_odm` 记录源路径，overlay 未生效时自动 bind mount）
+  - `status.sh` 的 `drv:` 检测新增 `/odm/firmware` 路径，真实反映固件 ini 解锁状态
+  - **实测结果**: 解锁后 6GHz 24 信道 (5955-6415) 全模式开放，状态从 `🔴6G-STA:blocked | 🟡6G-SAP:driver-limit` 变为 `🟢6G-STA:24ch | 🟢6G-SAP:24ch`
+
 ## v14 (2026-08-15)
 
 - **动态描述格式更新**: 字段间用 `|` 分隔，新增第二行信道编号详情

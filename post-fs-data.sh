@@ -19,6 +19,15 @@ if [ -f "${MODDIR}/xml/wificfg_source" ]; then
     fi
 fi
 
+# 1b. /odm/firmware 固件 ini：驱动固件实际加载的配置（ueventd firmware 机制）
+#     KSU/Magisk 的 system/odm overlay 未生效时 → bind mount 兜底
+if [ -f "${MODDIR}/xml/wificfg_source_odm" ]; then
+    ODM_INI=$(cat "${MODDIR}/xml/wificfg_source_odm")
+    if [ -f "${ODM_INI}" ] && ! grep -q 'enable-wifi-7 module' "${ODM_INI}" 2>/dev/null; then
+        mount -o ro,bind "${MODDIR}/xml/${WIFICFG}.odm" "${ODM_INI}"
+    fi
+fi
+
 # 2. 国家代码：多 root 方案兼容的 resetprop 路径
 RESETPROP=resetprop
 if [ -x /data/adb/ksu/bin/resetprop ]; then
