@@ -21,6 +21,7 @@
 - 禁用 802.11d（`g11dSupportEnabled=0`）及框架国家代码扫描/回退。
 - 多厂商识别：小米、OPPO、OnePlus、三星（persist）、联想及通用高通设备。
 - 多 SKU 芯片识别：从 `dumpsys wifi` 读取实际芯片名称（如 `kiwi_v2`、`peach_v2`），对正确的 SKU 目录打补丁，而非依赖通配符猜测。
+- 动态状态显示：开机时自动将实时解锁状态（国家代码、6GHz STA/SAP 信道数、802.11be、驱动 ini 状态）写入模块描述，KernelSU Manager 与 MMRL 等支持动态描述的加载器可显示。
 
 ## 环境要求
 
@@ -55,6 +56,7 @@ adb shell grep -E "g11dSupportEnabled|oem_6g_support_disable|gindoor_channel_sup
 1. **安装时**（`customize.sh`）：检测厂商 / SoC / 主板，定位芯片对应的 ini 目录，应用解锁参数表，并将补丁后的 ini 放入模块 `system/` overlay 路径。
 2. **开机时**（`post-fs-data.sh`）：若 overlay 未生效则 bind mount 兜底；通过 `resetprop` 设置 `ro.boot.wificountrycode=AU`。
 3. **启动完成后**（`service.sh`）：改写 `WifiConfigStore.xml` 中的国家代码（CN 至 AU）、覆盖框架扫描配置，并执行 `cmd wifi force-country-code enabled AU`。
+4. **状态上报**（`status.sh`）：检测实时解锁状态（国家代码、6GHz STA/SAP 信道数、802.11be、驱动 ini）并写入模块描述；KernelSU 通过 `ksud module config set override.description`，Magisk/MMRL 通过改写 `module.prop`。也可手动刷新：`sh /data/adb/modules/enable-wifi-7/status.sh`。
 
 ## 兼容性
 

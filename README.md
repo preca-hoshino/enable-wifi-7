@@ -21,6 +21,7 @@ Vendors restrict 6GHz and Wi-Fi 7 functionality at several layers: driver config
 - Disables 802.11d (`g11dSupportEnabled=0`) and framework country-code scan/fallback.
 - Multi-vendor detection: Xiaomi, OPPO, OnePlus, Samsung (persist), Lenovo, and generic Qualcomm.
 - Multi-SKU chip detection: reads the actual chip name (e.g. `kiwi_v2`, `peach_v2`) from `dumpsys wifi`, so the correct SKU directory is patched instead of a wildcard guess.
+- Dynamic status in module description: the module description is updated at boot with live unlock state (country code, 6GHz STA/SAP channel counts, 802.11be, driver ini status). Supported by KernelSU Manager and MMRL.
 
 ## Requirements
 
@@ -55,6 +56,7 @@ adb shell grep -E "g11dSupportEnabled|oem_6g_support_disable|gindoor_channel_sup
 1. **Install time** (`customize.sh`): detects vendor / SoC / board, locates the chip-specific ini directory, applies the unlock parameter table, and places the patched ini in the module's `system/` overlay path.
 2. **Boot** (`post-fs-data.sh`): bind-mounts the patched ini if the overlay did not take effect; sets `ro.boot.wificountrycode=AU` via `resetprop`.
 3. **Post-boot** (`service.sh`): rewrites the country code in `WifiConfigStore.xml` (CN to AU), overrides framework scan configs, and runs `cmd wifi force-country-code enabled AU`.
+4. **Status reporting** (`status.sh`): detects and writes the live unlock state (country code, 6GHz STA/SAP channels, 802.11be, driver ini) into the module description, via `ksud module config set override.description` on KernelSU and a `module.prop` rewrite on Magisk/MMRL. You can also refresh it manually with `sh /data/adb/modules/enable-wifi-7/status.sh`.
 
 ## Compatibility
 

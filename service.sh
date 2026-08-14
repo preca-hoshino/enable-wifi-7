@@ -36,4 +36,9 @@
 
     # 3. 强制国家码 AU（override 优先级最高，压过 telephony/扫描/driver）
     cmd wifi force-country-code enabled AU
+
+    # 4. 动态状态描述（KSU Manager / MMRL 等显示频段解锁状态）
+    #    等待 wifi 驱动就绪 + 信道表填充后刷新
+    sleep 20
+    sh "${MODDIR}/status.sh" >/dev/null 2>&1
 }&

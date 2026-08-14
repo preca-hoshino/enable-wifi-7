@@ -1,5 +1,12 @@
 # Changelog
 
+## v08 (2026-08-15)
+
+- **动态状态描述**: 新增 `status.sh`，开机后自动检测解锁状态并写入模块描述，KernelSU Manager / MMRL 等支持动态描述的加载器可实时显示
+  - 检测内容: 国家代码 (CC)、WiFi 开关、6GHz STA 信道数、6GHz SAP 信道数、802.11be、驱动 ini 解锁状态
+  - 机制: KernelSU 用 `ksud module config set override.description`，Magisk/MMRL 改写 `module.prop` 的 description 行
+  - 手动刷新: `sh /data/adb/modules/enable-wifi-7/status.sh`
+
 ## v06 (2026-08-14)
 
 - **Driver full unlock**: 参数表覆盖 `BandCapability`（注释）、`oem_6g_support_disable=0`、ETSI SRD SAP 信道（`etsi13_srd_chan_in_master_mode=7`）、室内信道补丁（`gindoor_channel_support=1`，存在则强制、缺失则追加）

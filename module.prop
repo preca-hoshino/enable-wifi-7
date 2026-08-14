@@ -1,8 +1,8 @@
 id=enable-wifi-7
 name=Enable Wi-Fi 6GHz & Wi-Fi 7
-version=v07
-versionCode=7
+version=v08
+versionCode=8
 author=preca-hoshino
 minMagisk=20400
-description=Enable Wi-Fi 6GHz & Wi-Fi 7 on Qualcomm devices (Xiaomi/OPPO/OnePlus/Samsung/Lenovo). Driver full unlock (BandCapability/oem_6g_support_disable/SRD SAP channels/indoor channel), force AU country code, disable 802.11d & framework country-code scan.
+description=Unlock Wi-Fi 6GHz & Wi-Fi 7 on Qualcomm devices (Xiaomi/OPPO/OnePlus/Samsung/Lenovo). Driver full unlock (BandCapability/oem_6g_support_disable/SRD SAP channels/indoor channel), force AU country code, disable 802.11d & framework country-code scan.
 updateJson=https://raw.githubusercontent.com/preca-hoshino/enable-wifi-7/master/update.json
