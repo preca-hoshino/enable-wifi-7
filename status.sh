@@ -79,22 +79,28 @@ DESC="${DESC} 11be:${BE11} driver:${INI_ST}"
 DESC="${DESC} | Unlock Wi-Fi 6GHz & Wi-Fi 7 on Qualcomm. Fork of AndroPlus-org/magisk-module-wifi7. AGPL-3.0."
 
 # ---------- 写入 ----------
-if command -v ksud >/dev/null 2>&1 && [ -n "$KSU_MODULE" ]; then
-    # KernelSU: 官方动态描述机制 (KSU_MODULE 由模块脚本环境注入)
-    ksud module config set override.description "$DESC" 2>/dev/null
-elif command -v ksud >/dev/null 2>&1; then
-    # 手动执行时 KSU_MODULE 未注入, 显式指定
-    KSU_MODULE="$MODID" ksud module config set override.description "$DESC" 2>/dev/null
-fi
+# 参考 AdGuardHomeForRoot / Specter 等成熟 KSU 模块的写法:
+#   1) 直接改写 module.prop 的 description 行 (Magisk/MMRL/KSU Manager 都读它)
+#   2) 再用 ksud module config set override.description (KSU 官方动态描述 API)
+#   - 环境变量兼容: KSU 脚本运行时注入 KSU_MODULE; 手动执行时用 MODULE_ID 前缀
+#   - 用绝对路径 /data/adb/ksud, 避免 PATH 不含 ksu/bin
 
-# Magisk / MMRL 兼容: 改写 module.prop 的 description 行 (KSU 下亦可作为兜底)
+# 1. sed 兜底: 改 module.prop (先转义 sed 特殊字符)
 MP="$MODDIR/module.prop"
 if [ -f "$MP" ]; then
-    # awk 改写避免 sed 分隔符/& 转义问题; 临时文件避免破坏 mount 关联
-    awk -v d="$DESC" 'BEGIN{FS=OFS="="} /^description=/{print "description=" d; next} {print}' "$MP" \
-        > /data/local/tmp/wifi7_mp.tmp 2>/dev/null
-    [ -s /data/local/tmp/wifi7_mp.tmp ] && cp /data/local/tmp/wifi7_mp.tmp "$MP"
-    rm -f /data/local/tmp/wifi7_mp.tmp
+    ESCAPED=$(printf '%s' "$DESC" | sed 's|[#&\\]|\\&|g')
+    sed -i "s#^description=.*#description=$ESCAPED#" "$MP" 2>/dev/null
+fi
+
+# 2. KernelSU 官方动态描述 API
+if [ -x /data/adb/ksud ]; then
+    if [ -n "$KSU_MODULE" ]; then
+        /data/adb/ksud module config set override.description "$DESC" 2>/dev/null
+    elif [ -n "$MODULE_ID" ]; then
+        KSU_MODULE="$MODULE_ID" /data/adb/ksud module config set override.description "$DESC" 2>/dev/null
+    else
+        KSU_MODULE="$MODID" /data/adb/ksud module config set override.description "$DESC" 2>/dev/null
+    fi
 fi
 
 echo "$DESC"

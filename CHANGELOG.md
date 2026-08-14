@@ -1,5 +1,14 @@
 # Changelog
 
+## v09 (2026-08-15)
+
+- **修复动态状态描述未生效**（参考 AdGuardHomeForRoot / Specter 等成熟 KSU 模块的写法）
+  - 写入逻辑改为: 先 `sed` 直接改写 `module.prop` 的 description 行（Magisk/MMRL/KSU Manager 都读取，最可靠），再用 `ksud module config set override.description`（KSU 官方 API）
+  - 不再依赖 `/data/local/tmp` 临时文件（开机时 `u:r:ksu:s0` 上下文可能无写权限，导致旧版 awk 方案静默失败）
+  - ksud 改用绝对路径 `/data/adb/ksud`，避免 PATH 缺失
+  - 环境变量兼容 `KSU_MODULE`（KSU 脚本注入）与 `MODULE_ID`
+- **注意**: `service.sh` 仅在开机时执行一次，安装模块后需**重启**才能自动刷新描述；也可手动运行 `sh /data/adb/modules/enable-wifi-7/status.sh`
+
 ## v08 (2026-08-15)
 
 - **动态状态描述**: 新增 `status.sh`，开机后自动检测解锁状态并写入模块描述，KernelSU Manager / MMRL 等支持动态描述的加载器可实时显示

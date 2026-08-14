@@ -33,7 +33,7 @@ Vendors restrict 6GHz and Wi-Fi 7 functionality at several layers: driver config
 
 1. Download the latest `enable-wifi-7-vXX.zip` from the [Releases](https://github.com/preca-hoshino/enable-wifi-7/releases) page.
 2. Flash the zip in Magisk / KernelSU / APatch.
-3. Reboot.
+3. **Reboot** — the status description is refreshed by `service.sh` at boot. To refresh without rebooting: `sh /data/adb/modules/enable-wifi-7/status.sh`.
 
 To uninstall, remove the module in the manager and reboot.
 
@@ -56,7 +56,7 @@ adb shell grep -E "g11dSupportEnabled|oem_6g_support_disable|gindoor_channel_sup
 1. **Install time** (`customize.sh`): detects vendor / SoC / board, locates the chip-specific ini directory, applies the unlock parameter table, and places the patched ini in the module's `system/` overlay path.
 2. **Boot** (`post-fs-data.sh`): bind-mounts the patched ini if the overlay did not take effect; sets `ro.boot.wificountrycode=AU` via `resetprop`.
 3. **Post-boot** (`service.sh`): rewrites the country code in `WifiConfigStore.xml` (CN to AU), overrides framework scan configs, and runs `cmd wifi force-country-code enabled AU`.
-4. **Status reporting** (`status.sh`): detects and writes the live unlock state (country code, 6GHz STA/SAP channels, 802.11be, driver ini) into the module description, via `ksud module config set override.description` on KernelSU and a `module.prop` rewrite on Magisk/MMRL. You can also refresh it manually with `sh /data/adb/modules/enable-wifi-7/status.sh`.
+4. **Status reporting** (`status.sh`): detects and writes the live unlock state (country code, 6GHz STA/SAP channels, 802.11be, driver ini) into the module description — first via a direct `module.prop` rewrite (works on all loaders), then via `ksud module config set override.description` on KernelSU. Runs at boot from `service.sh`; refresh manually with `sh /data/adb/modules/enable-wifi-7/status.sh`.
 
 ## Compatibility
 

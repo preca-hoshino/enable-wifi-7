@@ -33,7 +33,7 @@
 
 1. 从 [Releases](https://github.com/preca-hoshino/enable-wifi-7/releases) 页面下载最新的 `enable-wifi-7-vXX.zip`。
 2. 在 Magisk / KernelSU / APatch 中刷入该 zip。
-3. 重启。
+3. **重启** —— 动态状态描述由 `service.sh` 在开机时刷新。不重启也可手动刷新：`sh /data/adb/modules/enable-wifi-7/status.sh`。
 
 卸载：在管理器中移除模块并重启即可。
 
@@ -56,7 +56,7 @@ adb shell grep -E "g11dSupportEnabled|oem_6g_support_disable|gindoor_channel_sup
 1. **安装时**（`customize.sh`）：检测厂商 / SoC / 主板，定位芯片对应的 ini 目录，应用解锁参数表，并将补丁后的 ini 放入模块 `system/` overlay 路径。
 2. **开机时**（`post-fs-data.sh`）：若 overlay 未生效则 bind mount 兜底；通过 `resetprop` 设置 `ro.boot.wificountrycode=AU`。
 3. **启动完成后**（`service.sh`）：改写 `WifiConfigStore.xml` 中的国家代码（CN 至 AU）、覆盖框架扫描配置，并执行 `cmd wifi force-country-code enabled AU`。
-4. **状态上报**（`status.sh`）：检测实时解锁状态（国家代码、6GHz STA/SAP 信道数、802.11be、驱动 ini）并写入模块描述；KernelSU 通过 `ksud module config set override.description`，Magisk/MMRL 通过改写 `module.prop`。也可手动刷新：`sh /data/adb/modules/enable-wifi-7/status.sh`。
+4. **状态上报**（`status.sh`）：检测实时解锁状态（国家代码、6GHz STA/SAP 信道数、802.11be、驱动 ini）并写入模块描述——先直接改写 `module.prop`（所有加载器通用），再用 `ksud module config set override.description`（KernelSU 官方 API）。由 `service.sh` 在开机时执行；也可手动刷新：`sh /data/adb/modules/enable-wifi-7/status.sh`。
 
 ## 兼容性
 
