@@ -38,8 +38,16 @@ MODDIR=${0%/*}
     # 3. 强制国家码 AU（override 优先级最高，压过 telephony/扫描/driver）
     cmd wifi force-country-code enabled AU
 
-    # 4. 动态状态描述（KSU Manager / MMRL 等显示频段解锁状态）
-    #    等待 wifi 驱动就绪 + 信道表填充后刷新（status.sh 内部也带重试）
-    sleep 20
-    sh "${MODDIR}/status.sh" >/dev/null 2>&1
+    # 4. 关闭 WLAN 扫描调节 (开发者选项: WLAN扫描调节 / Wi-Fi scan throttling)
+    #    某些应用检测到此选项启用会提示; 设为 0 = 关闭节流, 允许频繁扫描
+    #    (开机时设置一次; 用户手动改回后模块不会覆盖, 避免打扰)
+    settings put global wifi_scan_throttle_enabled 0 2>/dev/null
+
+    # 5. 动态状态描述（KSU Manager / MMRL 等显示频段解锁状态）
+    #    定时刷新: 每 5 秒检测一次, 状态变化时才写入 (status.sh 内部去重)
+    #    首次调用会等待 wifi 就绪 (status.sh 内部最多等 120s)
+    while :; do
+        sh "${MODDIR}/status.sh" >/dev/null 2>&1
+        sleep 5
+    done
 }&

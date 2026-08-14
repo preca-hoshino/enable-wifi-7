@@ -1,5 +1,16 @@
 # Changelog
 
+## v14 (2026-08-15)
+
+- **动态描述格式更新**: 字段间用 `|` 分隔，新增第二行信道编号详情
+  - 完整版 (KSU): `[wifi7] 🟢CC:AU | 🟢wifi:on | 🟢6G-STA:24ch | 🟡6G-SAP:driver-limit | 🟢11be:on | 🟢drv:unlocked` 换行 `STA ch: (5955,5975,...6415)`
+  - 单行版 (Magisk/MMRL): 信道列表折叠进单行，兼容行式 module.prop 解析
+  - 全字段恒定显示，wifi off 时 6G 段显示 `⚪6G-STA:n/a`
+- **新增功能: 关闭 WLAN 扫描调节** (`wifi_scan_throttle_enabled=0`)
+  - 某些应用检测到"WLAN扫描调节已启用"会提示；模块开机时自动关闭，应用不再受限扫描频率
+  - 仅开机时设置一次，不覆盖用户手动修改
+- **定时刷新**: service.sh 每 5 秒调用 status.sh，状态变化时才写入（内部去重，避免无谓 IO）
+
 ## v13 (2026-08-15)
 
 - **修复动态描述开机不刷新的根因**: `service.sh` 丢失了 `MODDIR=${0%/*}` 定义，导致开机时 `sh "${MODDIR}/status.sh"` 变成 `sh "/status.sh"`（文件不存在，静默失败），描述永不刷新

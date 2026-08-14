@@ -1,7 +1,7 @@
 id=enable-wifi-7
 name=Enable Wi-Fi 6GHz & Wi-Fi 7
-version=v13
-versionCode=13
+version=v14
+versionCode=14
 author=preca-hoshino
 minMagisk=20400
 description=Unlock Wi-Fi 6GHz & Wi-Fi 7 (Qualcomm). Status auto-refreshed at boot.
