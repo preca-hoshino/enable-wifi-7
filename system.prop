@@ -4,6 +4,5 @@ ro.oplus.wifi.11be_disabled=0
 # Xiaomi: unlock 6GHz band region
 ro.miui.wifi.region=US
 
-# Lenovo
-ro.boot.countrycode=us
+# WiFi country code (also set via resetprop in post-fs-data.sh)
 ro.boot.wificountrycode=AU

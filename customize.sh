@@ -48,9 +48,10 @@ unlock_ini() {
 
     # 驱动层 6GHz 全开放参数表（存在则强制设值，缺失则 END 前追加）
     #  oem_6g_support_disable=0           6GHz 总开关
-    #  etsi13_srd_chan_in_master_mode=7   SAP/P2P-GO/NAN 的 6GHz SRD 信道（BIT0/1/2）
-    #  gindoor_channel_support=1          SoftAP 允许 6GHz indoor 信道（小米补丁开关）
-    local force_params="oem_6g_support_disable=0\netsi13_srd_chan_in_master_mode=7\ngindoor_channel_support=1"
+    #  注意: 不设 SAP 相关参数 (etsi13_srd_chan_in_master_mode / gindoor_channel_support)
+    #        这些只影响 SAP/P2P 角色，且驱动在 SAP 下本就不开放 6GHz；
+    #        移除可避免驱动尝试未预期的信道组合导致 boot 卡死 (QCOM watchdog 25s 重启)
+    local force_params="oem_6g_support_disable=0"
     local p name val
     for p in $force_params; do
         name="${p%%=*}"

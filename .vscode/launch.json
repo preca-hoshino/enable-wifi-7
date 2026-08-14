@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "打包模块 zip 到根目录",
+            "type": "node-terminal",
+            "request": "launch",
+            // 无需 PowerShell 扩展；直接在当前目录用 pwsh 执行打包脚本。
+            // 末尾 exit 确保 pwsh 进程退出，调试会话自动结束（否则一直显示运行中）
+            "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}/.vscode/build-module.ps1\"; exit $LASTEXITCODE",
+            "cwd": "${workspaceFolder}",
+            "presentation": {
+                "clear": true,
+                "group": "build"
+            }
+        }
+    ],
+    "compounds": []
+}

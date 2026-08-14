@@ -1,5 +1,14 @@
 # Changelog
 
+## v12 (2026-08-15)
+
+- **参数保守化，降低 boot 卡死风险**（Xiaomi 15 实测卡第二屏后修复）
+  - `customize.sh`: 解锁参数表精简为仅 `oem_6g_support_disable=0`（6GHz 总开关），移除 `etsi13_srd_chan_in_master_mode=7` 与 `gindoor_channel_support=1`
+  - 原因: 这两个参数只影响 SAP/P2P-GO 角色，而驱动在 SAP 下本就不开放 6GHz 信道；强制它们会让驱动尝试未预期的信道组合，曾导致驱动固件忙等 → QCOM watchdog 25s 强制重启（卡第二屏）
+  - 现保留 SAP 参数出厂原值（不强制、不追加），仅做 STA 6GHz 解锁
+- `system.prop`: 移除冗余的 `ro.boot.countrycode=us`（Lenovo 已不需要，post-fs-data.sh 已 resetprop `ro.boot.wificountrycode=AU`）
+- **bootloop 防护不内置**: 救砖由 KernelSU safe mode（音量减开机）负责
+
 ## v11 (2026-08-15)
 
 - **动态描述改为色球状态标识**: 每项状态前用 🟢(正常/已解锁) 🟡(中间/驱动受限) 🔴(异常/未解锁) ⚪(未知) 标识
