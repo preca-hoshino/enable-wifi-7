@@ -1,5 +1,11 @@
 # Changelog
 
+## v10 (2026-08-15)
+
+- **精简 system.prop，降低副作用**: 移除 `ro.product.locale.region=US` 与 `ro.product.countrycode=us`（这两个属性会改变系统区域，影响 Play 商店/应用市场区域，且与国家码解锁无关）
+- 保留: `ro.miui.wifi.region=US`（小米 6GHz 频段）、`ro.boot.countrycode=us`（联想）、`ro.boot.wificountrycode=AU`、`ro.oplus.wifi.11be_disabled=0`
+- 安全评估结论: 模块无 framework 级修改、无阻塞 boot 的操作，卡第二屏风险低
+
 ## v09 (2026-08-15)
 
 - **修复动态状态描述未生效**（参考 AdGuardHomeForRoot / Specter 等成熟 KSU 模块的写法）

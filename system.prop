@@ -1,11 +1,9 @@
 # Enable Wi-Fi 7 (for some devices)
 ro.oplus.wifi.11be_disabled=0
 
-# Xiaomi
+# Xiaomi: unlock 6GHz band region
 ro.miui.wifi.region=US
-ro.product.locale.region=US
 
-#Lenovo
+# Lenovo
 ro.boot.countrycode=us
-ro.product.countrycode=us
 ro.boot.wificountrycode=AU
