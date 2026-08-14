@@ -5,4 +5,4 @@ versionCode=7
 author=preca-hoshino
 minMagisk=20400
 description=Enable Wi-Fi 6GHz & Wi-Fi 7 on Qualcomm devices (Xiaomi/OPPO/OnePlus/Samsung/Lenovo). Driver full unlock (BandCapability/oem_6g_support_disable/SRD SAP channels/indoor channel), force AU country code, disable 802.11d & framework country-code scan.
-updateJson=https://raw.githubusercontent.com/preca-hoshino/enable-wifi-7/main/update.json
+updateJson=https://raw.githubusercontent.com/preca-hoshino/enable-wifi-7/master/update.json
