@@ -15,6 +15,19 @@ MODDIR=${0%/*}
 MODID=$(grep '^id=' "$MODDIR/module.prop" 2>/dev/null | cut -d= -f2)
 [ -z "$MODID" ] && MODID=enable-wifi-7
 
+# ---------- 等待 wifi 就绪 (开机时驱动可能未加载完) ----------
+# 最多等 120 秒: 每 5 秒检查一次 country code 是否返回有效值
+WAIT=0
+while [ $WAIT -lt 24 ]; do
+    CC_RAW=$(cmd wifi get-country-code 2>/dev/null)
+    CC_TMP=$(printf '%s' "$CC_RAW" | grep -o '= *[A-Za-z]*' | tr -d '= ' | head -1)
+    if [ -n "$CC_TMP" ] && [ "$CC_TMP" != "n/a" ]; then
+        break
+    fi
+    sleep 5
+    WAIT=$((WAIT + 1))
+done
+
 # ---------- 状态检测 (全部容错, 失败显示 n/a) ----------
 
 # 1. 国家代码

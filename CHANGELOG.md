@@ -1,5 +1,12 @@
 # Changelog
 
+## v13 (2026-08-15)
+
+- **修复动态描述开机不刷新的根因**: `service.sh` 丢失了 `MODDIR=${0%/*}` 定义，导致开机时 `sh "${MODDIR}/status.sh"` 变成 `sh "/status.sh"`（文件不存在，静默失败），描述永不刷新
+  - 对比 `post-fs-data.sh` 一直有该定义，`service.sh` 在 v05 修改时被误删
+  - 已模拟 KSU 执行方式实测: 修复后 service.sh 能正确调用 status.sh，描述自动更新为色球动态版
+- `status.sh` 增加等待重试: 开机时若 wifi 未就绪（country code 无值），每 5 秒重试，最多等 120 秒，确保写入有效状态而非垃圾值
+
 ## v12 (2026-08-15)
 
 - **参数保守化，降低 boot 卡死风险**（Xiaomi 15 实测卡第二屏后修复）

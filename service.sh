@@ -4,6 +4,7 @@
 # and module is placed.
 # This will make sure your module will still work
 # if Magisk change its mount point in the future
+MODDIR=${0%/*}
 
 {
     # Wait for boot completed
@@ -38,7 +39,7 @@
     cmd wifi force-country-code enabled AU
 
     # 4. 动态状态描述（KSU Manager / MMRL 等显示频段解锁状态）
-    #    等待 wifi 驱动就绪 + 信道表填充后刷新
+    #    等待 wifi 驱动就绪 + 信道表填充后刷新（status.sh 内部也带重试）
     sleep 20
     sh "${MODDIR}/status.sh" >/dev/null 2>&1
 }&
