@@ -1,5 +1,11 @@
 # Changelog
 
+## v11 (2026-08-15)
+
+- **动态描述改为色球状态标识**: 每项状态前用 🟢(正常/已解锁) 🟡(中间/驱动受限) 🔴(异常/未解锁) ⚪(未知) 标识
+  - 例: `[wifi7] 🟢CC:AU 🟢wifi:on 🟢6G-STA:24ch 🟡6G-SAP:driver-limit 🟢11be:on 🟢drv:unlocked`
+- **去掉默认描述**: 描述仅包含动态状态, 不再附带功能说明尾缀; `module.prop` 静态描述精简为一行
+
 ## v10 (2026-08-15)
 
 - **精简 system.prop，降低副作用**: 移除 `ro.product.locale.region=US` 与 `ro.product.countrycode=us`（这两个属性会改变系统区域，影响 Play 商店/应用市场区域，且与国家码解锁无关）

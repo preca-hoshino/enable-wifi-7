@@ -59,24 +59,58 @@ for ini in /vendor/etc/wifi/${CHIP}/WCNSS_qcom_cfg.ini \
     fi
 done
 
-# ---------- 组装描述 ----------
-DESC="[wifi7] CC:${CC} wifi:${WIFI_STATE}"
+# ---------- 组装描述 (色球状态标识) ----------
+# 🟢 正常/已解锁   🟡 中间状态/驱动受限   🔴 异常/未解锁   ⚪ 未知
+# 描述仅包含动态状态, 不含功能说明文字
+
+# 1. 国家码
+case "$CC" in
+    AU)  CC_ICON="🟢" ;;
+    n/a) CC_ICON="⚪" ;;
+    *)   CC_ICON="🔴" ;;
+esac
+
+# 2. WiFi 开关
+case "$WIFI_STATE" in
+    on)  WIFI_ICON="🟢" ;;
+    *)   WIFI_ICON="🟡" ;;
+esac
+
+# 3. 6GHz STA / SAP
+STA_ICON="⚪"; STA_TXT="n/a"
+SAP_ICON="⚪"; SAP_TXT="n/a"
 if [ "$WIFI_STATE" = "on" ]; then
     if [ "$STA6" != "n/a" ] && [ "$STA6" -gt 0 ] 2>/dev/null; then
-        DESC="${DESC} 6GHz-STA:${STA6}ch"
+        STA_ICON="🟢"; STA_TXT="${STA6}ch"
     else
-        DESC="${DESC} 6GHz-STA:blocked"
+        STA_ICON="🔴"; STA_TXT="blocked"
     fi
     if [ "$SAP6" != "n/a" ] && [ "$SAP6" -gt 0 ] 2>/dev/null; then
-        DESC="${DESC} 6GHz-SAP:${SAP6}ch"
+        SAP_ICON="🟢"; SAP_TXT="${SAP6}ch"
     else
-        DESC="${DESC} 6GHz-SAP:driver-limited"
+        SAP_ICON="🟡"; SAP_TXT="driver-limit"
     fi
 fi
-DESC="${DESC} 11be:${BE11} driver:${INI_ST}"
 
-# 附带简短功能说明 (manager 列表页显示)
-DESC="${DESC} | Unlock Wi-Fi 6GHz & Wi-Fi 7 on Qualcomm. Fork of AndroPlus-org/magisk-module-wifi7. AGPL-3.0."
+# 4. 802.11be
+case "$BE11" in
+    on)  BE_ICON="🟢" ;;
+    off) BE_ICON="🔴" ;;
+    *)   BE_ICON="⚪" ;;
+esac
+
+# 5. 驱动 ini
+case "$INI_ST" in
+    unlocked) DRV_ICON="🟢" ;;
+    *)        DRV_ICON="🔴" ;;
+esac
+
+# 组装
+DESC="[wifi7] ${CC_ICON}CC:${CC} ${WIFI_ICON}wifi:${WIFI_STATE}"
+if [ "$WIFI_STATE" = "on" ]; then
+    DESC="${DESC} ${STA_ICON}6G-STA:${STA_TXT} ${SAP_ICON}6G-SAP:${SAP_TXT}"
+fi
+DESC="${DESC} ${BE_ICON}11be:${BE11} ${DRV_ICON}drv:${INI_ST}"
 
 # ---------- 写入 ----------
 # 参考 AdGuardHomeForRoot / Specter 等成熟 KSU 模块的写法:
